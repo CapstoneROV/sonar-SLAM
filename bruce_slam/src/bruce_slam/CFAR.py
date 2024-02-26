@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import math
 import numpy as np
 from scipy.optimize import root

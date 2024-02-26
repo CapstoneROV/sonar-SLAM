@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from ctypes import Union
 from typing import Any
 from enum import Enum
@@ -26,7 +27,7 @@ class STATUS(Enum):
         Enum.__init__(*args, **kwargs)
         self.description = None
 
-    def __bool__(self) -> bool:
+    def __bool__(self):
         """boolean override
 
         Returns:
@@ -34,7 +35,7 @@ class STATUS(Enum):
         """
         return self == STATUS.SUCCESS
 
-    def __nonzero__(self) -> bool:
+    def __nonzero__(self):
         """_summary_
 
         Returns:
@@ -42,7 +43,7 @@ class STATUS(Enum):
         """
         return self == STATUS.SUCCESS
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Convert this class to a string
 
         Returns:
@@ -62,11 +63,11 @@ class Keyframe(object):
 
     def __init__(
         self,
-        status: bool,
-        time: rospy.Time,
-        dr_pose3: gtsam.Pose3,
-        points: np.array = np.zeros((0, 2), np.float32),
-        cov: np.array = None,
+        status,
+        time,
+        dr_pose3,
+        points = np.zeros((0, 2), np.float32),
+        cov= None,
         source_pose=None, 
         between_pose=None, 
         index=None, 
@@ -134,7 +135,7 @@ class Keyframe(object):
         self.scan_match_eig_max = None
         self.bits = None
 
-    def update(self, new_pose: gtsam.Pose2, new_cov: np.array = None) -> None:
+    def update(self, new_pose, new_cov = None):
         """Update a keyframe following a SLAM update, pass in the new pose and covariance
 
         Args:
@@ -176,7 +177,7 @@ class Keyframe(object):
             self.transf_cov[2, :2] = self.transf_cov[2, :2].dot(R.T)
 
     @staticmethod
-    def transform_points(points: np.array, pose: gtsam.Pose2) -> np.array:
+    def transform_points(points, pose):
         """transform a set of 2D points given a pose
 
         Args:
@@ -198,9 +199,7 @@ class Keyframe(object):
         return points.dot(T[:2, :2].T) + T[:2, 2]
 
     @staticmethod
-    def transform_points_3D(
-        points: np.array, pose: gtsam.Pose2, pose3: gtsam.Pose3
-    ) -> np.array:
+    def transform_points_3D(points, pose, pose3):
         """transform a set of 3D points to a given pose
 
         Args:
@@ -249,9 +248,9 @@ class ICPResult(object):
 
     def __init__(
         self,
-        init_ret: InitializationResult,
-        use_samples: bool = False,
-        sample_eps: float = 0.01,
+        init_ret,
+        use_samples= False,
+        sample_eps = 0.01,
     ):
         """Class constructor
 

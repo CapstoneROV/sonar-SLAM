@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import gtsam
 import numpy as np
 
@@ -116,7 +117,7 @@ class SLAM(object):
         self.save_data = False
 
     @property
-    def current_keyframe(self) -> Keyframe:
+    def current_keyframe(self):
         """Get the current keyframe from the SLAM solution
 
         Returns:
@@ -127,7 +128,7 @@ class SLAM(object):
         return self.keyframes[-1]
 
     @property
-    def current_key(self) -> int:
+    def current_key(self):
         """Get the length of the list that stores the keyframes
 
         Returns:
@@ -136,7 +137,7 @@ class SLAM(object):
 
         return len(self.keyframes)
 
-    def configure(self) -> None:
+    def configure(self):
         """Configure SLAM"""
 
         # check nssm covariance params
@@ -162,7 +163,7 @@ class SLAM(object):
         self.odom_model = self.create_noise_model(self.odom_sigmas)
         self.icp_odom_model = self.create_noise_model(self.icp_odom_sigmas)
 
-    def get_states(self) -> np.array:
+    def get_states(self):
         """Retrieve all states as array which are represented as
             [time, pose2, dr_pose3, cov]
             - pose2: [x, y, yaw]
@@ -202,7 +203,7 @@ class SLAM(object):
         return states
 
     @staticmethod
-    def sample_pose(pose: gtsam.Pose2, covariance: np.array) -> gtsam.Pose2:
+    def sample_pose(pose, covariance):
         """Generate a random pose using the covariance matrix to define a normal dist.
 
         Args:
@@ -217,7 +218,7 @@ class SLAM(object):
         delta = np.random.multivariate_normal(np.zeros(3), covariance)
         return pose.compose(n2g(delta, "Pose2"))
 
-    def sample_current_pose(self) -> gtsam.Pose2:
+    def sample_current_pose(self):
         """Add random noise to self.current_keyframe.pose using self.sample_pose()
 
         Returns:
@@ -227,8 +228,8 @@ class SLAM(object):
         return self.sample_pose(self.current_keyframe.pose, self.current_keyframe.cov)
 
     def get_points(
-        self, frames: list = None, ref_frame: Any = None, return_keys: bool = False
-    ) -> np.array:
+        self, frames=None, ref_frame = None, return_keys = False
+    ):
         """Get a point cloud, doing the following steps
             - Accumulate points in frames
             - Transform them to reference frame
@@ -293,10 +294,10 @@ class SLAM(object):
 
     def compute_icp(
         self,
-        source_points: np.array,
-        target_points: np.array,
-        guess: np.array = gtsam.Pose2(),
-    ) -> Union:
+        source_points,
+        target_points,
+        guess = gtsam.Pose2(),
+    ):
         """Compute standard ICP
 
         Args:
@@ -323,8 +324,8 @@ class SLAM(object):
         return message, gtsam.Pose2(x, y, theta)
 
     def compute_icp_with_cov(
-        self, source_points: np.array, target_points: np.array, guesses: list
-    ) -> Union:
+        self, source_points, target_points, guesses
+    ):
         """Compute ICP with a covariance matrix
 
         Args:
@@ -388,12 +389,12 @@ class SLAM(object):
 
     def get_overlap(
         self,
-        source_points: np.array,
-        target_points: np.array,
-        source_pose: gtsam.Pose2 = None,
-        target_pose: gtsam.Pose2 = None,
-        return_indices: bool = False,
-    ) -> int:
+        source_points,
+        target_points,
+        source_pose = None,
+        target_pose = None,
+        return_indices = False,
+    ):
         """Get the overlap between the provided clouds, the count of points with a nearest neighbor
 
         Args:
@@ -423,7 +424,7 @@ class SLAM(object):
         else:
             return np.sum(indices != -1)
 
-    def add_prior(self, keyframe: Keyframe) -> None:
+    def add_prior(self, keyframe):
         """Add the prior factor for the first pose in the SLAM solution. This is the starting frame.
 
         Args:
@@ -435,7 +436,7 @@ class SLAM(object):
         self.graph.add(factor)
         self.values.insert(X(0), pose)
 
-    def add_odometry(self, keyframe: Keyframe) -> None:
+    def add_odometry(self, keyframe):
         """Add the odometry factor between provided keyframe and the last keyframe
 
         Args:
@@ -460,12 +461,12 @@ class SLAM(object):
 
     def get_matching_cost_subroutine1(
         self,
-        source_points: np.array,
-        source_pose: gtsam.Pose2,
-        target_points: np.array,
-        target_pose: gtsam.Pose2,
-        source_pose_cov: np.array = None,
-    ) -> Union:
+        source_points,
+        source_pose,
+        target_points,
+        target_pose,
+        source_pose_cov= None,
+    ):
         """Perform global cost point cloud alignment. Here we transform source points to target points.
 
         Args:
@@ -533,7 +534,7 @@ class SLAM(object):
 
         source_pose_info = np.linalg.inv(source_pose_cov)
 
-        def subroutine(x: np.array) -> float:
+        def subroutine(x):
             """The optimization subroutine, called iterativly by scipy.shgo
 
             Args:
@@ -605,8 +606,8 @@ class SLAM(object):
         return subroutine, pose_samples
 
     def initialize_sequential_scan_matching(
-        self, keyframe: Keyframe
-    ) -> InitializationResult:
+        self, keyframe
+    ):
         """Init a sequential scan matching call by using global ICP.
 
         Args:
@@ -715,7 +716,7 @@ class SLAM(object):
 
         return ret
 
-    def add_sequential_scan_matching(self, keyframe: Keyframe) -> None:
+    def add_sequential_scan_matching(self, keyframe):
         """Add the sequential scan matching factor to the graph. Here we use the global ICP as an inital
         guess for standard ICP. We then perform some simple checks to catch silly outliers. If those
         checks pass we add the ICP result to the pose graph.
@@ -836,7 +837,7 @@ class SLAM(object):
         if self.save_fig:
             ret2.plot("step-{}-ssm-icp.png".format(self.current_key))
 
-    def initialize_nonsequential_scan_matching(self) -> InitializationResult:
+    def initialize_nonsequential_scan_matching(self):
         """Initialize a nonsequential scan matching call. Here we use global ICP to check for loop closures with the
         most recent keyframe and the rest of the map.
 
@@ -1000,7 +1001,7 @@ class SLAM(object):
 
         return ret
 
-    def add_nonsequential_scan_matching(self) -> ICPResult:
+    def add_nonsequential_scan_matching(self):
         """Run a loop closure search. Here we compare the most recent keyframe to the
         previous frames. If a loop is found it is subject to geometric verification via PCM.
 
@@ -1131,7 +1132,7 @@ class SLAM(object):
 
         return ret2
 
-    def is_keyframe(self, frame: Keyframe) -> bool:
+    def is_keyframe(self, frame):
         """Check if a Keyframe object meets the conditions to be a SLAM keyframe.
         If the vehicle has moved enough. Either rotation or translation.
 
@@ -1160,9 +1161,7 @@ class SLAM(object):
             translation > self.keyframe_translation or rotation > self.keyframe_rotation
         )
 
-    def create_full_noise_model(
-        self, cov: np.array
-    ) -> gtsam.noiseModel.Gaussian.Covariance:
+    def create_full_noise_model(self, cov):
         """Create a noise model from a numpy array using the gtsam api.
 
         Args:
@@ -1174,7 +1173,7 @@ class SLAM(object):
 
         return gtsam.noiseModel.Gaussian.Covariance(cov)
 
-    def create_robust_full_noise_model(self, cov: np.array) -> gtsam.noiseModel.Robust:
+    def create_robust_full_noise_model(self, cov):
         """Create a robust gtsam noise model from a numpy array
 
         Args:
@@ -1188,7 +1187,7 @@ class SLAM(object):
         robust = gtsam.noiseModel.mEstimator.Cauchy.Create(1.0)
         return gtsam.noiseModel.Robust.Create(robust, model)
 
-    def create_noise_model(self, *sigmas: list) -> gtsam.noiseModel.Diagonal:
+    def create_noise_model(self, *sigmas):
         """Create a noise model from a list of sigmas, treated like a diagnal matrix.
 
         Returns:
@@ -1196,7 +1195,7 @@ class SLAM(object):
         """
         return gtsam.noiseModel.Diagonal.Sigmas(np.r_[sigmas])
 
-    def create_robust_noise_model(self, *sigmas: list) -> gtsam.noiseModel.Robust:
+    def create_robust_noise_model(self, *sigmas):
         """Create a robust noise model from a list of sigmas
 
         Returns:
@@ -1207,7 +1206,7 @@ class SLAM(object):
         robust = gtsam.noiseModel.mEstimator.Cauchy.Create(1.0)
         return gtsam.noiseModel.Robust.Create(robust, model)
 
-    def update_factor_graph(self, keyframe: Keyframe = None) -> None:
+    def update_factor_graph(self, keyframe= None):
         """Update the internal SLAM estimate
 
         Args:
@@ -1240,7 +1239,7 @@ class SLAM(object):
             if ret.inserted:
                 ret.estimated_transform = ret.target_pose.between(ret.source_pose)
 
-    def verify_pcm(self, queue: list, min_pcm_value: int) -> list:
+    def verify_pcm(self, queue, min_pcm_value):
         """Get the pairwise consistent measurements.
 
         Args:
@@ -1286,7 +1285,7 @@ class SLAM(object):
 
         return maximum_clique
 
-    def find_cliques(self, G: defaultdict):
+    def find_cliques(self, G):
         """Returns all maximal cliques in an undirected graph.
 
         Args:

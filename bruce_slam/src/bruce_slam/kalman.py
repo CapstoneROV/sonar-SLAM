@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #python imports
 import tf
 import rospy
@@ -35,7 +36,7 @@ class KalmanNode(object):
 		self.imu_yaw0 = None
 
 
-	def init_node(self, ns="~")->None:
+	def init_node(self, ns="~"):
 		"""Init the node, fetch all paramaters.
 
 		Args:
@@ -61,7 +62,7 @@ class KalmanNode(object):
 		x = rospy.get_param(ns + "offset/x") # gyroscope offset matrix
 		y = rospy.get_param(ns + "offset/y")
 		z = rospy.get_param(ns + "offset/z")
-		self.offset_matrix = Rotation.from_euler("xyz",[x,y,z],degrees=True).as_matrix()
+		self.offset_matrix = Rotation.from_euler("xyz",[x,y,z],degrees=True).as_dcm()
 		self.dvl_max_velocity = rospy.get_param(ns + "dvl_max_velocity")
 		self.use_gyro = rospy.get_param(ns + "use_gyro")
 		self.imu_offset = np.radians(rospy.get_param(ns + "imu_offset"))
@@ -92,7 +93,7 @@ class KalmanNode(object):
 		loginfo("Kalman Node is initialized")
 
 
-	def kalman_predict(self,previous_x:np.array,previous_P:np.array,A:np.array):
+	def kalman_predict(self,previous_x,previous_P,A):
 		"""Propagate the state and the error covariance ahead.
 
 		Args:
@@ -112,7 +113,7 @@ class KalmanNode(object):
 		return predicted_x, predicted_P
 
 
-	def kalman_correct(self, predicted_x:np.array, predicted_P:np.array, z:np.array, H:np.array, R:np.array):
+	def kalman_correct(self, predicted_x, predicted_P, z, H, R):
 		"""Measurement Update.
 
 		Args:
@@ -135,7 +136,7 @@ class KalmanNode(object):
 		return corrected_x, corrected_P
 
 
-	def gyro_callback(self,gyro_msg:gyro)->None:
+	def gyro_callback(self,gyro_msg):
 		"""Handle the Kalman Filter using the FOG only.
 		Args:
 			gyro_msg (gyro): the euler angles from the gyro
@@ -148,7 +149,7 @@ class KalmanNode(object):
 		self.state_vector,self.cov_matrix = self.kalman_correct(self.state_vector, self.cov_matrix, delta_yaw_meas, self.H_gyro, self.R_gyro)
 		self.yaw_gyro += self.state_vector[11][0]
 
-	def dvl_callback(self, dvl_msg:DVL)->None:
+	def dvl_callback(self, dvl_msg):
 		"""Handle the Kalman Filter using the DVL only.
 
 		Args:
@@ -165,7 +166,7 @@ class KalmanNode(object):
 			self.state_vector,self.cov_matrix  = self.kalman_correct(self.state_vector, self.cov_matrix, dvl_measurement, self.H_dvl, self.R_dvl)
 
 
-	def pressure_callback(self,depth_msg:Depth):
+	def pressure_callback(self,depth_msg):
 		"""Handle the Kalman Filter using the Depth.
 		Args:
 			depth_msg (Depth): pressure
@@ -174,7 +175,7 @@ class KalmanNode(object):
 		depth = np.array([[depth_msg.depth],[0],[0]]) # We need the shape(3,1) for the correction
 		self.state_vector,self.cov_matrix = self.kalman_correct(self.state_vector, self.cov_matrix, depth, self.H_depth, self.R_depth)
 
-	def imu_callback(self, imu_msg:Imu)->None:
+	def imu_callback(self, imu_msg):
 		"""Handle the Kalman Filter using the VN100 only. Publish the state vector.
 
 		Args:
@@ -216,7 +217,7 @@ class KalmanNode(object):
 		self.pose = gtsam.Pose3(R, gtsam.Point3(point[0], point[1], 0))
 		self.send_odometry(imu_msg.header.stamp)
 
-	def send_odometry(self,t:float):
+	def send_odometry(self,t):
 		"""Publish the pose.
 		Args:
 			t (float): time from imu_msg

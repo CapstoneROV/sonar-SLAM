@@ -5,7 +5,7 @@ from bruce_slam.utils.io import *
 from bruce_slam.slam_ros import SLAMNode
 from bruce_slam.utils.topics import *
 
-def offline(args)->None:
+def offline(args):
     """run the SLAM system offline
 
     Args:

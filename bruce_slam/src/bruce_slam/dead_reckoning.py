@@ -52,7 +52,7 @@ class DeadReckoningNode(object):
 		self.rov_id = ""
 
 
-	def init_node(self, ns="~")->None:
+	def init_node(self, ns="~"):
 		"""Init the node, fetch all paramaters from ROS
 
 		Args:
@@ -101,7 +101,7 @@ class DeadReckoningNode(object):
 		loginfo("Localization node is initialized")
 
 
-	def callback(self, imu_msg:Imu, dvl_msg:DVL)->None:
+	def callback(self, imu_msg, dvl_msg):
 		"""Handle the dead reckoning using the VN100 and DVL only. Fuse and publish an odometry message.
 
 		Args:
@@ -141,7 +141,7 @@ class DeadReckoningNode(object):
 		self.send_odometry(vel,rot,dvl_msg.header.stamp,depth_msg.depth)
 
 
-	def callback_with_gyro(self, imu_msg:Imu, dvl_msg:DVL, gyro_msg:GyroMsg)->None:
+	def callback_with_gyro(self, imu_msg, dvl_msg, gyro_msg):
 		"""Handle the dead reckoning state estimate using the fiber optic gyro. Here we use the
 		Gyro as a means of getting the yaw estimate, roll and pitch are still VN100.
 
@@ -181,7 +181,7 @@ class DeadReckoningNode(object):
 		self.send_odometry(vel,rot,dvl_msg.header.stamp,depth_msg.depth)
 
 
-	def send_odometry(self,vel:np.array,rot:gtsam.Rot3,dvl_time:rospy.Time,depth:float)->None:
+	def send_odometry(self,vel,rot,dvl_time,depth):
 		"""Package the odometry given all the DVL, rotation matrix, and depth
 
 		Args:
@@ -267,7 +267,7 @@ class DeadReckoningNode(object):
 		self.publish_pose(new_keyframe)
 
 
-	def publish_pose(self, publish_traj:bool=False)->None:
+	def publish_pose(self, publish_traj=False):
 		"""Publish the pose
 
 		Args:

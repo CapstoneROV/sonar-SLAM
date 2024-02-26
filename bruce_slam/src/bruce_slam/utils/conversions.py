@@ -15,7 +15,7 @@ import struct
 from .topics import *
 
 
-def X(x:int) -> gtsam.symbol:
+def X(x):
     """convert an integer to a gtsam symbol
 
     Args:
@@ -27,7 +27,7 @@ def X(x:int) -> gtsam.symbol:
 
     return gtsam.symbol("x", x)
 
-def pose322(pose:gtsam.Pose3) -> gtsam.Pose2:
+def pose322(pose):
     """Convert a gtsam.Pose3 to a gtsam.Pose2
 
     Args:
@@ -40,7 +40,7 @@ def pose322(pose:gtsam.Pose3) -> gtsam.Pose2:
     return gtsam.Pose2(pose.x(), pose.y(), pose.rotation().yaw())
 
 
-def pose223(pose:gtsam.Pose2) -> gtsam.Pose3:
+def pose223(pose):
     """convert a gtsam.Pose2 to a gtsam.Pose3
 
     Args:
@@ -55,7 +55,7 @@ def pose223(pose:gtsam.Pose2) -> gtsam.Pose3:
     )
 
 
-def n2g(numpy_arr:np.array, obj:str) -> any:
+def n2g(numpy_arr, obj) :
     """convert a numpy array to gtsam
 
     Args:
@@ -98,7 +98,7 @@ def n2g(numpy_arr:np.array, obj:str) -> any:
         raise NotImplementedError("Not implemented from numpy to " + obj)
 
 
-def g2n(gtsam_obj:gtsam) -> np.array:
+def g2n(gtsam_obj):
     """converts a gtsam object to a numpy array
 
     Args:
@@ -146,7 +146,7 @@ def g2n(gtsam_obj:gtsam) -> np.array:
         )
 
 
-def r2g(ros_msg) -> gtsam.Pose3:
+def r2g(ros_msg):
     """convert a ros message to a 3D pose in gtsam
 
     Args:
@@ -180,7 +180,7 @@ def r2g(ros_msg) -> gtsam.Pose3:
         )
 
 
-def g2r(gtsam_obj:gtsam.Pose3) -> Pose:
+def g2r(gtsam_obj):
     """convert a gtsam.Pose3 to a ros pose message
 
     Args:
@@ -214,7 +214,7 @@ def g2r(gtsam_obj:gtsam.Pose3) -> Pose:
 bridge = cv_bridge.CvBridge()
 
 
-def r2n(ros_msg:OculusPing) -> np.array:
+def r2n(ros_msg):
     """Convert a ros message of type OculusPing to a numpy array
 
     Args:
@@ -246,7 +246,7 @@ def r2n(ros_msg:OculusPing) -> np.array:
             "Not implemented from {} to numpy".format(str(type(ros_msg)))
         )
 
-def build_rgb_cloud(arr:np.array) -> pc2:
+def build_rgb_cloud(arr):
     """Convert an array of [xyz,rgb] to a ROS point cloud with colors
 
     Args:
@@ -273,7 +273,7 @@ def build_rgb_cloud(arr:np.array) -> pc2:
     return pc2.create_cloud(header, fields, points)
     
 
-def n2r(numpy_arr:np.array, msg:any) -> any:
+def n2r(numpy_arr, msg):
     """Package a nump array as the target ros message type in msg
 
     Args:

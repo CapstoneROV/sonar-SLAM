@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # python imports
 import threading
 import tf
@@ -32,7 +33,7 @@ class SLAMNode(SLAM):
         # the threading lock
         self.lock = threading.RLock()
 
-    def init_node(self, ns="~")->None:
+    def init_node(self, ns="~"):
         """Configures the SLAM node
 
         Args:
@@ -132,7 +133,7 @@ class SLAMNode(SLAM):
         loginfo("SLAM node is initialized")
 
     @add_lock
-    def sonar_callback(self, ping:OculusPing)->None:
+    def sonar_callback(self, ping):
         """Subscribe once to configure Oculus property.
         Assume sonar configuration doesn't change much.
 
@@ -144,7 +145,7 @@ class SLAMNode(SLAM):
         self.sonar_sub.unregister()
 
     @add_lock
-    def SLAM_callback(self, feature_msg:PointCloud2, odom_msg:Odometry)->None:
+    def SLAM_callback(self, feature_msg, odom_msg):
         """SLAM call back. Subscibes to the feature msg point cloud and odom msg
             Handles the whole SLAM system and publishes map, poses and constraints
 
@@ -212,7 +213,7 @@ class SLAMNode(SLAM):
         self.publish_all()
         self.lock.release()
 
-    def publish_all(self)->None:
+    def publish_all(self):
         """Publish to all ouput topics
             trajectory, contraints, point cloud and the full GTSAM instance
         """
@@ -225,7 +226,7 @@ class SLAMNode(SLAM):
             self.publish_constraint()
             self.publish_point_cloud()
 
-    def publish_pose(self)->None:
+    def publish_pose(self):
         """Append dead reckoning from Localization to SLAM estimate to achieve realtime TF.
         """
 
@@ -266,7 +267,7 @@ class SLAMNode(SLAM):
         odom_msg.twist.twist = self.current_frame.twist
         self.odom_pub.publish(odom_msg)
 
-    def publish_constraint(self)->None:
+    def publish_constraint(self):
         """Publish constraints between poses in the factor graph,
         either sequential or non-sequential.
         """
@@ -298,7 +299,7 @@ class SLAMNode(SLAM):
             self.constraint_pub.publish(link_msg)
 
 
-    def publish_trajectory(self)->None:
+    def publish_trajectory(self):
         """Publish 3D trajectory as point cloud in [x, y, z, roll, pitch, yaw, index] format.
         """
 
@@ -314,7 +315,7 @@ class SLAMNode(SLAM):
             traj_msg.header.frame_id = self.rov_id + "_map"
         self.traj_pub.publish(traj_msg)
 
-    def publish_point_cloud(self)->None:
+    def publish_point_cloud(self):
         """Publish downsampled 3D point cloud with z = 0.
         The last column represents keyframe index at which the point is observed.
         """
