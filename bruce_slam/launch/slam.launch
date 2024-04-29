@@ -48,12 +48,16 @@
                 <rosparam command="load" file="$(find bruce_slam)/config/feature.yaml" subst_value="true"/>
             </node>
 
+            <node pkg="bruce_slam" name="msging" type="sonar_slam_messaging.py" output="screen"/>
+            <node pkg="bruce_slam" name="dvl_msg" type="dvl_messaging.py" output="screen"/>
             <!-- start the SLAM node -->
             <node pkg="bruce_slam" name="slam" type="slam_node.py" output="screen">
                 <rosparam command="load" file="$(find bruce_slam)/config/slam.yaml" subst_value="true"/>
                 <param name="enable_slam" value="$(arg enable_slam)"/>
                 <param name="save_fig" value="false"/>
             </node>
+
+            <!-- <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0.7071068 0 0 0.7071068 map base_link 100" /> -->
 
         </group>
         <node pkg="tf" name="map_to_world_tf_publisher" type="static_transform_publisher" args="0 0 0 0 0 3.14159 world map 100"/>
