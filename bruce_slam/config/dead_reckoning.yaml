@@ -1,8 +1,11 @@
 # Localization node
-dvl_max_velocity: 0.5
+dvl_max_velocity: 5 # possibly removes the spikes 
 
 # [x y z roll pitch yaw]
-imu_pose: [0, 0, 0, deg(-90), 0, 0]  
+# imu_pose: [0, 0, 0, deg(-90), 0, 0]  
+imu_pose: [0, 0, 0, 0, 0, 0]   # why is the IMU pose in the same orientation with the DVL frame; 
+# in simulation, dvl values are generated with the IMU; 
+# Assumption: DVL is aligned with the robot main frame; 
 
 # keyframe spacing for the dead reckoning system
 keyframe_duration: 1.0
