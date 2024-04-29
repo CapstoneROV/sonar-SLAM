@@ -7,7 +7,8 @@ from sonar_oculus.msg import OculusPing
 """
 Topics for the bruce_slam project
 """
-IMU_TOPIC = "/vn100/imu/raw"
+# IMU_TOPIC = "/vn100/imu/raw"
+IMU_TOPIC = "/imu"
 IMU_TOPIC_MK_II = "/vectornav/IMU"
 DVL_TOPIC = "/rti/body_velocity/raw"
 DEPTH_TOPIC = "/bar30/depth/raw"
@@ -34,3 +35,10 @@ MAPPING_OCCUPANCY_TOPIC = SLAM_NS + "mapping/occupancy"
 MAPPING_GET_MAP_SERVICE = SLAM_NS + "mapping/get_map"
 SONAR_FEATURE_TOPIC = SLAM_NS + "feature_extraction/feature"
 SONAR_FEATURE_IMG_TOPIC = SLAM_NS + "feature_extraction/feature_img"
+# change for the sonar messaging
+# RECT_IMAGE_TOPIC = "/dummy/mbe_sonar_rect"
+RECT_IMAGE_TOPIC = "/mbe_stream"
+# Connect to Odometry output from Mavros; 
+# LOCALIZATION_ODOM_TOPIC  = "/mavros/local_position/odom"
+MAVROS_ODOM_TOPIC  = "/mavros/local_position/odom"
+MAVROS_POSE_TOPIC = "/mavros/local_position/pose"
