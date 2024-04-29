@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 depth_msg.pressure_abs = 0.0
                 depth_msg.pressure_diff = 0.0
                 depth_msg.temperature = 0.0
-                depth_msg.depth = 50 + trans.z
+                depth_msg.depth = trans.z
                 depth_pub.publish(depth_msg)
 
         prev_trans = trans
