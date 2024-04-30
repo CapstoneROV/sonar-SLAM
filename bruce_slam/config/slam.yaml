@@ -1,7 +1,7 @@
 # how often to add keyframes, this can be varied but between 1 and 4 meters is best
-keyframe_duration: 1.0
-keyframe_translation: 3.0
-keyframe_rotation: deg(30)
+keyframe_duration: 0.5
+keyframe_translation: 4.0
+keyframe_rotation: deg(20)
 
 # define the noise models
 # x, y, theta in m, m, rad
@@ -19,7 +19,7 @@ point_resolution: 0.5
 ssm:
   enable: True # is this module enabled?
   min_points: 50 # the min number of points to try SSM
-  max_translation: 3.0 # the max translation allowed
+  max_translation: 2.0 # the max translation allowed
   max_rotation: deg(30) # the max rotation allowed
   target_frames: 3 # the numeber of frames we compare the current frame to 
 
