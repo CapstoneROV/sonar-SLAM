@@ -4,6 +4,7 @@ import threading
 import tf
 import rospy
 import cv_bridge
+import json
 from nav_msgs.msg import Odometry
 from message_filters import  Subscriber
 from sensor_msgs.msg import PointCloud2
@@ -305,6 +306,13 @@ class SLAMNode(SLAM):
 
         #get all the poses from each keyframe
         poses = np.array([g2n(kf.pose3) for kf in self.keyframes])
+        # times = [(kf.time.secs, kf.time.nsecs) for kf in self.keyframes]
+        # data = {
+        #     "times": times,
+        #     "poses": [tuple(row) for row in poses]
+        # }
+        # with open('/home/ardupilot/capstonerov/src/trajectory.json', 'w') as f:
+        #     json.dump(data, f)
 
         #convert to a ros color line
         traj_msg = ros_colorline_trajectory(poses)
